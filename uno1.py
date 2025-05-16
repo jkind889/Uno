@@ -78,6 +78,7 @@ while not stop:
     current = (current + 1) % len(order)
     currentplayer = order[current]
     print(f"\n--- {currentplayer}'s turn ---")
+    value = None
     for card in hands[currentplayer]:
         topcard = discarded[-1]
         topcolor, topvalue = unofcns.splitcard(topcard)
@@ -88,47 +89,19 @@ while not stop:
             played_card = discarded[-1]
             color, value = unofcns.splitcard(played_card)
             print(f"{currentplayer} has drawn {played_card}")
-            if value == "skip":
-                current = (current + 1) % len(order)
-            elif value == "reverse":
-                order.reverse()
-                current = (len(order)-current) % len(order)
-            elif value == "draw 2":
-                nextplayer = (current +1) % len(order)
-                for i in range(2):
-                    if not allcards:
-                        print("Deck is empty. Reshuffling discard pile...")
-                        allcards = discarded[:-1]  # Keep top card in play
-                        discarded = [discarded[-1]]
-                        random.shuffle(allcards)
-                    hands[order[nextplayer]].append(allcards.pop())
-            elif value == "draw 4":
-                nextplayer = (current +1) % len(order)
-                for i in range(4):
-                    if not allcards:
-                        print("Deck is empty. Reshuffling discard pile...")
-                        allcards = discarded[:-1]  # Keep top card in play
-                        discarded = [discarded[-1]]
-                        random.shuffle(allcards)
-                    hands[order[nextplayer]].append(allcards.pop())
-                chosencolor = input("What color do you select from Red,Blue,Yellow,Green")
-                current_color = chosencolor
-            elif value == "wild":
-                color,value = unofcns.splitcard(discarded[-1])
-                chosencolor = input("What color do you select from Red,Blue,Yellow,Green")
-                current_color = chosencolor
-            if len(hands[currentplayer]) == 1:
-                print(f"{currentplayer} calls UNO")
-            elif len(hands[currentplayer]) == 0:
-                print(f"{currentplayer} has WON")
-                stop = True
-            break
-            
+            if unofcns.isspecialcard(value,order,discarded,allcards,hands,current):
+                continue
+        if len(hands[currentplayer]) == 1:
+            print(f"{currentplayer} calls UNO")
+        elif len(hands[currentplayer]) == 0:
+            print(f"{currentplayer} has WON")
+            stop = True
+        break
 
     else:
         if not allcards:
             print("Deck is empty. Reshuffling discard pile...")
-            allcards = discarded[:-1]  # Keep top card in play
+            allcards = discarded[:-1]  
             discarded = [discarded[-1]]
             random.shuffle(allcards)
 
