@@ -62,10 +62,16 @@ hands = {
 current=0
 playedcard=""
 currentplayer = order[current]
-for card in hands[currentplayer]:
-        if unofcns.isvalidfirstcard(card):
-            hands[order[current]].remove(card)
-            discarded.append(card)
+if currentplayer == name:
+    check = input(f"Here's your deck {hands[currentplayer]}, what card do you want to play ").strip()
+    for card in hands[currentplayer]:
+        if check in hands[currentplayer]:
+            if unofcns.isvalidfirstcard(check,hands,order,current,discarded):
+                print(f"{currentplayer} drew {check}") # trying to make the player have their own input
+                break   
+elif currentplayer in hands:
+    for card in hands[currentplayer]:
+        if unofcns.isvalidfirstcard(card,hands,order,current,discarded):
             print(f"{currentplayer} drew {card}")
             break
 else:
@@ -79,25 +85,47 @@ while not stop:
     currentplayer = order[current]
     print(f"\n--- {currentplayer}'s turn ---")
     value = None
-    for card in hands[currentplayer]:
-        topcard = discarded[-1]
-        topcolor, topvalue = unofcns.splitcard(topcard)
-        current_color = topcolor
-        if unofcns.isvalidcard(card,topcard,current_color):
-            hands[order[current]].remove(card)
-            discarded.append(card)
-            played_card = discarded[-1]
-            color, value = unofcns.splitcard(played_card)
-            print(f"{currentplayer} has drawn {played_card}")
-            if unofcns.isspecialcard(value,order,discarded,allcards,hands,current):
-                continue
-        if len(hands[currentplayer]) == 1:
-            print(f"{currentplayer} calls UNO")
-        elif len(hands[currentplayer]) == 0:
-            print(f"{currentplayer} has WON")
-            stop = True
-        break
-
+    if currentplayer == name:
+        print(f"Before you make a move the card at the top is {discarded[-1]}")
+        check = input(f"Here's your deck {hands[currentplayer]}, what card do you want to play ").strip()
+        for card in hands[currentplayer]:
+            topcard = discarded[-1]
+            topcolor, topvalue = unofcns.splitcard(topcard)
+            current_color = topcolor
+            if check in hands[currentplayer]:
+                if unofcns.isvalidcard(card,topcard,current_color):
+                    hands[order[current]].remove(card)
+                    discarded.append(card)
+                    played_card = discarded[-1]
+                    color, value = unofcns.splitcard(played_card)
+                    print(f"{currentplayer} has drawn {played_card}")
+                    if len(hands[currentplayer]) == 1:
+                        print(f"{currentplayer} calls UNO")
+                    elif len(hands[currentplayer]) == 0:
+                        print(f"{currentplayer} has WON")
+                        stop = True
+                    if unofcns.isspecialcard(value,order,discarded,allcards,hands,current):
+                        break
+                    break
+    elif currentplayer in hands:
+        for card in hands[currentplayer]:
+            topcard = discarded[-1]
+            topcolor, topvalue = unofcns.splitcard(topcard)
+            current_color = topcolor
+            if unofcns.isvalidcard(card,topcard,current_color):
+                hands[order[current]].remove(card)
+                discarded.append(card)
+                played_card = discarded[-1]
+                color, value = unofcns.splitcard(played_card)
+                print(f"{currentplayer} has drawn {played_card}")
+                if len(hands[currentplayer]) == 1:
+                    print(f"{currentplayer} calls UNO")
+                elif len(hands[currentplayer]) == 0:
+                    print(f"{currentplayer} has WON")
+                    stop = True
+                if unofcns.isspecialcard(value,order,discarded,allcards,hands,current):
+                    break
+                break
     else:
         if not allcards:
             print("Deck is empty. Reshuffling discard pile...")

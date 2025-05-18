@@ -19,12 +19,14 @@ def isvalidcard(card,topcard,currentcolor):
     return (
         color == currentcolor or
         value == topvalue or
-        color == "Wild" 
+        color == "Wild"
     )
 
-def isvalidfirstcard(card):
+def isvalidfirstcard(card,hands,order,current,discarded):
     color,value = splitcard(card)
-    return value.isdigit()
+    hands[order[current]].remove(card)
+    discarded.append(card)
+    return value.isdigit(),current,order,discarded
 
 def isspecialcard(value,order,discarded,allcards,hands,current):
             if value == "skip":
